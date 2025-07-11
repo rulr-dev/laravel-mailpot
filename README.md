@@ -21,7 +21,7 @@ Think of it like [Mailtrap](https://mailtrap.io/) or [Mailhog](https://github.co
 ## Installation
 
 ```bash
-composer require --dev rulr/mailpot
+composer require --dev rulr/laravel-mailpot
 ```
 
 > This package is intended for **local development only**.  
