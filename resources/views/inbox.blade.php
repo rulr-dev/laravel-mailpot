@@ -18,8 +18,8 @@
     </header>
 
     <!-- Main Content -->
-    <!-- Main Content -->
-    <div class="flex flex-1 min-h-0">
+    <div class="flex flex-1 min-h-0 overflow-hidden">
+
         <!-- Sidebar -->
         <aside class="w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto h-full">
             <ul class="divide-y divide-gray-100">
@@ -79,20 +79,19 @@
             </template>
         </main>
     </div>
-
 </div>
 
 <!-- AlpineJS -->
 <script>
-    function mailpotInbox() {
-        return {
-            selected: null,
-            messages: @json($messages),
-            formatText(text) {
-                return text?.replace(/\n/g, '<br>') ?? '';
-            }
-        };
-    }
+  function mailpotInbox() {
+    return {
+      selected: null,
+      messages: @json($messages),
+      formatText(text) {
+        return text?.replace(/\n/g, '<br>') ?? '';
+      }
+    };
+  }
 </script>
 
 </body>
