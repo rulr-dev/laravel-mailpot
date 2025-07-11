@@ -18,16 +18,16 @@
     </header>
 
     <!-- Main Content -->
-    <div class="flex flex-1 overflow-hidden">
-
+    <!-- Main Content -->
+    <div class="flex flex-1 min-h-0">
         <!-- Sidebar -->
-        <aside class="w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto">
+        <aside class="w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto h-full">
             <ul class="divide-y divide-gray-100">
                 <template x-for="(message, index) in messages" :key="index">
                     <li
-                        class="cursor-pointer hover:bg-gray-50 transition-colors"
-                        :class="{ 'bg-gray-100': selected === index }"
-                        @click="selected = index"
+                            class="cursor-pointer hover:bg-gray-50 transition-colors"
+                            :class="{ 'bg-gray-100': selected === index }"
+                            @click="selected = index"
                     >
                         <div class="p-4 space-y-1">
                             <h3 class="text-sm font-medium truncate" x-text="message.parsed.subject || '(No Subject)'"></h3>
@@ -79,6 +79,7 @@
             </template>
         </main>
     </div>
+
 </div>
 
 <!-- AlpineJS -->
