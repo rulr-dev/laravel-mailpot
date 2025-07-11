@@ -1,5 +1,5 @@
 {
-    "name": "rulr/mailpot",
+    "name": "rulr/laravel-mailpot",
     "description": "A local mail inbox for Laravel",
     "type": "library",
     "autoload": {
