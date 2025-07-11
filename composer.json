@@ -2,6 +2,8 @@
     "name": "rulr/laravel-mailpot",
     "description": "A local mail inbox for Laravel",
     "type": "library",
+    "keywords": ["laravel", "mail", "email", "mailtrap"],
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Rulr\\Mailpot\\": "src/"
