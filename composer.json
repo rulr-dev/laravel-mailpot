@@ -28,6 +28,11 @@
     },
     "require-dev": {
         "orchestra/testbench": "^8.0 || ^9.0 || ^10.0",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^12.2"
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse"
     }
 }

@@ -11,7 +11,7 @@ class CleanMailpotInbox extends Command
     protected $signature = 'mailpot:clean';
     protected $description = 'Clean all stored Mailpot emails, with optional stats reset.';
 
-    public function handle()
+    public function handle(): void
     {
         $path = Mailpot::ensureInboxDirectory();
 

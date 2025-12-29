@@ -34,7 +34,7 @@ class MailpotServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('local')) {
+        if (app()->environment('local') === true) {
             $this->loadViewsFrom(__DIR__ . '/../resources/views', 'mailpot');
 
             Route::middleware('web')

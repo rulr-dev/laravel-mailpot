@@ -14,7 +14,7 @@ class MailpotTransport extends AbstractTransport
 {
     protected string $storagePath;
 
-    public function __construct(string $dsn = null)
+    public function __construct()
     {
         parent::__construct();
 
@@ -41,10 +41,13 @@ class MailpotTransport extends AbstractTransport
 
         $fileName = now()->format('Y-m-d_H-i-s') . '_' . Str::random(6) . '.json';
 
-        File::put(
-            $this->storagePath . DIRECTORY_SEPARATOR . $fileName,
-            json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-        );
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        if ($json !== false) {
+            File::put(
+                $this->storagePath . DIRECTORY_SEPARATOR . $fileName,
+                $json
+            );
+        }
 
         Statistics::update($this->storagePath);
     }
