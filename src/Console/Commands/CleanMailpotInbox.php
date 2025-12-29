@@ -9,6 +9,7 @@ use Rulr\Mailpot\Support\Mailpot;
 class CleanMailpotInbox extends Command
 {
     protected $signature = 'mailpot:clean';
+
     protected $description = 'Clean all stored Mailpot emails, with optional stats reset.';
 
     public function handle(): void
@@ -16,12 +17,12 @@ class CleanMailpotInbox extends Command
         $path = Mailpot::ensureInboxDirectory();
 
         $deleted = $this->deleteInboxMessages($path);
-        $this->info("🧹 Cleaned $deleted message(s) from Mailpot inbox.");
+        $this->info("Cleaned $deleted message(s) from Mailpot inbox.");
 
         if ($this->confirm('Do you also want to delete the stats file?', false)) {
             $this->deleteStatsFile($path);
         } else {
-            $this->info("📊 Stats were preserved.");
+            $this->info('Stats were preserved.');
         }
     }
 
@@ -45,13 +46,13 @@ class CleanMailpotInbox extends Command
 
     protected function deleteStatsFile(string $directory): void
     {
-        $statsPath = $directory . '/stats.json';
+        $statsPath = $directory.'/stats.json';
 
         if (File::exists($statsPath)) {
             File::delete($statsPath);
-            $this->info("❌ Deleted stats.json.");
+            $this->info('Deleted stats.json.');
         } else {
-            $this->warn("⚠️  No stats.json file found.");
+            $this->warn('No stats.json file found.');
         }
     }
 }

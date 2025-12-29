@@ -15,9 +15,9 @@ class Mailpot
     {
         $path = self::inboxPath();
 
-        if (!File::exists($path)) {
+        if (! File::exists($path)) {
             File::makeDirectory($path, 0755, true);
-            File::put($path . '/.gitignore', "*\n!.gitignore");
+            File::put($path.'/.gitignore', "*\n!.gitignore");
         }
 
         return $path;
@@ -25,12 +25,11 @@ class Mailpot
 
     public static function statsFilePath(): string
     {
-        return self::inboxPath() . '/stats.json';
+        return self::inboxPath().'/stats.json';
     }
 
     public static function isMessageFile(string $filename): bool
     {
         return str_ends_with($filename, '.json') && $filename !== 'stats.json';
     }
-
 }

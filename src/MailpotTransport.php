@@ -4,11 +4,11 @@ namespace Rulr\Mailpot;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Rulr\Mailpot\Support\Mailpot;
+use Rulr\Mailpot\Support\Statistics;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mime\Email;
-use Rulr\Mailpot\Support\Mailpot;
-use Rulr\Mailpot\Support\Statistics;
 
 class MailpotTransport extends AbstractTransport
 {
@@ -30,21 +30,21 @@ class MailpotTransport extends AbstractTransport
         }
 
         $data = [
-            'from'    => $email->getFrom()[0]->toString(),
-            'to'      => array_map(fn ($a) => $a->toString(), $message->getEnvelope()->getRecipients()),
+            'from' => $email->getFrom()[0]->toString(),
+            'to' => array_map(fn ($a) => $a->toString(), $message->getEnvelope()->getRecipients()),
             'subject' => $email->getSubject(),
-            'html'    => $email->getHtmlBody(),
-            'text'    => $email->getTextBody(),
-            'date'    => now()->toDateTimeString(),
+            'html' => $email->getHtmlBody(),
+            'text' => $email->getTextBody(),
+            'date' => now()->toDateTimeString(),
             'headers' => $email->getHeaders()->toArray(),
         ];
 
-        $fileName = now()->format('Y-m-d_H-i-s') . '_' . Str::random(6) . '.json';
+        $fileName = now()->format('Y-m-d_H-i-s').'_'.Str::random(6).'.json';
 
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         if ($json !== false) {
             File::put(
-                $this->storagePath . DIRECTORY_SEPARATOR . $fileName,
+                $this->storagePath.DIRECTORY_SEPARATOR.$fileName,
                 $json
             );
         }
