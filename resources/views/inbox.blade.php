@@ -2,25 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>📪 Mailpot Inbox</title>
+    <title>Mailpot Inbox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased" x-data="mailpotInbox()">
 
-<!-- Page Wrapper -->
 <div class="min-h-screen flex flex-col">
 
-    <!-- Header -->
     <header class="bg-white shadow-sm border-b px-6 py-2 flex items-center justify-between">
         <h1 class="text-xl md:text-xl font-semibold text-blue-700">Laravel Mailpot</h1>
         <span class="text-sm text-gray-500">Total Messages: {{ count($messages) }}</span>
     </header>
 
-    <!-- Main Content -->
     <div class="flex flex-1 min-h-0 overflow-hidden">
 
-        <!-- Sidebar -->
         <aside class="w-full md:w-1/3 lg:w-1/4 bg-white border-r overflow-y-auto h-full">
             <ul class="divide-y divide-gray-100">
                 <template x-for="(message, index) in messages" :key="index">
@@ -39,9 +35,7 @@
             </ul>
         </aside>
 
-        <!-- Preview Pane -->
         <main class="flex-1 overflow-y-auto p-6">
-            <!-- Selected Message View -->
             <template x-if="selected !== null">
                 <div class="max-w-4xl mx-auto bg-white shadow-sm border rounded-xl p-6 space-y-4 transition-all">
                     <h2 class="text-lg font-semibold text-gray-800" x-text="messages[selected].parsed.subject || '(No Subject)'"></h2>
@@ -55,14 +49,9 @@
                 </div>
             </template>
 
-            <!-- Stats View -->
             <template x-if="selected === null">
                 <div class="max-w-md mx-auto mt-10 bg-white border rounded-xl p-6 shadow-sm text-sm text-gray-700 space-y-3 text-left">
-                    <h2 class="text-base font-semibold text-gray-800 mb-2">📊 Inbox Statistics</h2>
-                    @php
-                        $statsPath = storage_path('framework/mailpot/stats.json');
-                        $stats = file_exists($statsPath) ? json_decode(file_get_contents($statsPath), true) : null;
-                    @endphp
+                    <h2 class="text-base font-semibold text-gray-800 mb-2">Inbox Statistics</h2>
 
                     @if($stats)
                         <ul class="space-y-1">
@@ -81,7 +70,6 @@
     </div>
 </div>
 
-<!-- AlpineJS -->
 <script>
   function mailpotInbox() {
     return {

@@ -8,7 +8,8 @@ class Mailpot
 {
     public static function inboxPath(): string
     {
-        return storage_path('framework/mailpot');
+        /** @var string */
+        return config('mailpot.storage_path', storage_path('framework/mailpot'));
     }
 
     public static function ensureInboxDirectory(): string

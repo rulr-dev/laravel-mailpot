@@ -12,6 +12,8 @@ class MailpotServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/mailpot.php', 'mailpot');
+
         $this->app->afterResolving(MailManager::class, function (MailManager $manager) {
             $manager->extend('mailpot', function () {
                 return new MailpotTransport;
@@ -28,6 +30,12 @@ class MailpotServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/mailpot.php' => config_path('mailpot.php'),
+            ], 'mailpot-config');
+        }
+
         if (app()->environment('local') === true) {
             $this->loadViewsFrom(__DIR__.'/../resources/views', 'mailpot');
 
