@@ -191,20 +191,130 @@
             </template>
 
             <template x-if="selected === null">
-                <div class="max-w-md mx-auto mt-10 bg-white border rounded-xl p-6 shadow-sm text-sm text-gray-700 space-y-3 text-left">
-                    <h2 class="text-base font-semibold text-gray-800 mb-2">Inbox Statistics</h2>
+                <div class="max-w-xl mx-auto mt-10 space-y-4">
+                    <div class="bg-white border rounded-xl p-6 shadow-sm text-sm text-gray-700 text-left">
+                        <h2 class="text-base font-semibold text-gray-800 mb-4">Inbox Statistics</h2>
 
-                    @if($stats)
-                        <ul class="space-y-1">
-                            <li><strong>Total:</strong> {{ $stats['total'] }}</li>
-                            <li><strong>Total Size:</strong> {{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['total_size']) }}</li>
-                            <li><strong>Largest:</strong> {{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['largest']) }}</li>
-                            <li><strong>Smallest:</strong> {{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['smallest']) }}</li>
-                            <li><strong>Last Updated:</strong> {{ $stats['last_updated'] }}</li>
-                        </ul>
-                    @else
-                        <p>No statistics found.</p>
-                    @endif
+                        @if($stats)
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-2 bg-blue-100 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Total Messages</p>
+                                        <p class="font-semibold text-gray-800">{{ $stats['total'] }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-2 bg-purple-100 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Total Size</p>
+                                        <p class="font-semibold text-gray-800">{{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['total_size']) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-2 bg-green-100 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Largest Message</p>
+                                        <p class="font-semibold text-gray-800">{{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['largest']) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-2 bg-orange-100 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Smallest Message</p>
+                                        <p class="font-semibold text-gray-800">{{ \Rulr\Mailpot\Support\Statistics::formatBytes($stats['smallest']) }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-span-2 flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                    <div class="p-2 bg-gray-200 rounded-lg">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500">Last Updated</p>
+                                        <p class="font-semibold text-gray-800">{{ $stats['last_updated'] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-gray-500">No statistics found.</p>
+                            </div>
+                        @endif
+
+                        <div class="mt-4 pt-4 border-t">
+                            <p class="text-xs text-gray-500 mb-2">View stats in your terminal:</p>
+                            <div class="flex items-center gap-2" x-data="{ copied: false }">
+                                <code class="flex-1 bg-gray-900 text-gray-100 px-3 py-2 rounded-lg text-xs font-mono">php artisan mailpot:stats</code>
+                                <button
+                                    @click="navigator.clipboard.writeText('php artisan mailpot:stats'); copied = true; setTimeout(() => copied = false, 2000)"
+                                    class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                                    :title="copied ? 'Copied!' : 'Copy to clipboard'"
+                                >
+                                    <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border rounded-xl p-6 shadow-sm text-sm text-gray-700 text-left">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-semibold text-gray-800">Clear Inbox</h2>
+                                <p class="text-xs text-gray-500 mt-1">Remove all stored messages from the Mailpot inbox. You will be prompted to optionally delete the stats file as well.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2" x-data="{ copied: false }">
+                            <code class="flex-1 bg-gray-900 text-gray-100 px-3 py-2 rounded-lg text-xs font-mono">php artisan mailpot:clean</code>
+                            <button
+                                @click="navigator.clipboard.writeText('php artisan mailpot:clean'); copied = true; setTimeout(() => copied = false, 2000)"
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                                :title="copied ? 'Copied!' : 'Copy to clipboard'"
+                            >
+                                <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                <svg x-show="copied" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </template>
         </main>
