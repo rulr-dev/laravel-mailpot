@@ -5,6 +5,33 @@
     <title>Mailpot Inbox</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
+    <style>
+        .resize-handle {
+            position: absolute;
+            top: 0;
+            right: -6px;
+            width: 12px;
+            height: 100%;
+            cursor: ew-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .resize-handle::before {
+            content: '';
+            width: 4px;
+            height: 40px;
+            max-height: 50%;
+            background: #cbd5e1;
+            border-radius: 2px;
+            transition: background 0.15s, height 0.15s;
+        }
+        .resize-handle:hover::before,
+        .resize-handle.dragging::before {
+            background: #94a3b8;
+            height: 60px;
+        }
+    </style>
 </head>
 <body class="h-full overflow-hidden bg-gray-50 text-gray-800 antialiased" x-data="mailpotInbox()">
 
@@ -47,17 +74,67 @@
             </ul>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <main class="flex-1 overflow-hidden p-6 bg-gray-50 flex flex-col">
             <template x-if="selected !== null">
-                <div class="max-w-4xl mx-auto bg-white shadow-sm border rounded-xl p-6 space-y-4">
-                    <h2 class="text-lg font-semibold text-gray-800" x-text="messages[selected].parsed.subject || '(No Subject)'"></h2>
-
-                    <div class="text-sm space-y-1 text-gray-600">
-                        <p><strong>From:</strong> <span x-text="messages[selected].parsed.from || '-'"></span></p>
-                        <p><strong>To:</strong> <span x-text="(messages[selected].parsed.to || []).join(', ')"></span></p>
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <div class="flex-shrink-0 flex items-center justify-center gap-1 mb-4">
+                        <button
+                            @click="setViewport('mobile')"
+                            :class="viewport === 'mobile' ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="p-2 rounded border transition-colors"
+                            title="Mobile (375px)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        <button
+                            @click="setViewport('tablet')"
+                            :class="viewport === 'tablet' ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="p-2 rounded border transition-colors"
+                            title="Tablet (768px)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        <button
+                            @click="setViewport('desktop')"
+                            :class="viewport === 'desktop' ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 hover:bg-gray-100'"
+                            class="p-2 rounded border transition-colors"
+                            title="Desktop (100%)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        <span class="ml-2 text-xs text-gray-400" x-text="viewportLabel"></span>
                     </div>
 
-                    <div class="prose max-w-none text-sm text-gray-800" x-html="messages[selected].parsed.html || formatText(messages[selected].parsed.text) || '(No content)'"></div>
+                    <div class="flex-1 overflow-auto flex justify-center" x-ref="scrollContainer">
+                        <div class="relative h-fit" :style="{ width: containerWidth }">
+                            <div
+                                x-ref="viewportContainer"
+                                class="bg-white shadow-sm border rounded-xl p-6 space-y-4 overflow-y-auto"
+                                style="max-height: calc(100vh - 200px);"
+                            >
+                                <h2 class="text-lg font-semibold text-gray-800" x-text="messages[selected].parsed.subject || '(No Subject)'"></h2>
+
+                                <div class="text-sm space-y-1 text-gray-600">
+                                    <p><strong>From:</strong> <span x-text="messages[selected].parsed.from || '-'"></span></p>
+                                    <p><strong>To:</strong> <span x-text="(messages[selected].parsed.to || []).join(', ')"></span></p>
+                                </div>
+
+                                <div class="prose max-w-none text-sm text-gray-800" x-html="messages[selected].parsed.html || formatText(messages[selected].parsed.text) || '(No content)'"></div>
+                            </div>
+
+                            <div
+                                class="resize-handle"
+                                :class="{ 'dragging': isDragging }"
+                                @mousedown.prevent="startResize"
+                            ></div>
+                        </div>
+                    </div>
                 </div>
             </template>
 
@@ -86,7 +163,74 @@
   function mailpotInbox() {
     return {
       selected: null,
+      viewport: 'desktop',
+      customWidth: null,
+      isDragging: false,
+      startX: 0,
+      startWidth: 0,
       messages: @json($messages),
+
+      get containerWidth() {
+        if (this.viewport === 'custom' && this.customWidth) {
+          return `${this.customWidth}px`;
+        }
+        const widths = {
+          mobile: '375px',
+          tablet: '768px',
+          desktop: '100%'
+        };
+        return widths[this.viewport];
+      },
+
+      get viewportLabel() {
+        if (this.viewport === 'custom' && this.customWidth) {
+          return `Custom (${this.customWidth}px)`;
+        }
+        const labels = {
+          mobile: 'Mobile (375px)',
+          tablet: 'Tablet (768px)',
+          desktop: 'Desktop (100%)'
+        };
+        return labels[this.viewport];
+      },
+
+      setViewport(size) {
+        this.viewport = size;
+        this.customWidth = null;
+      },
+
+      startResize(e) {
+        this.isDragging = true;
+        this.startX = e.clientX;
+
+        const container = this.$refs.viewportContainer;
+        this.startWidth = container.offsetWidth;
+
+        document.addEventListener('mousemove', this.onResize.bind(this));
+        document.addEventListener('mouseup', this.stopResize.bind(this));
+        document.body.style.cursor = 'ew-resize';
+        document.body.style.userSelect = 'none';
+      },
+
+      onResize(e) {
+        if (!this.isDragging) return;
+
+        const diff = e.clientX - this.startX;
+        const newWidth = Math.max(280, this.startWidth + diff);
+        const maxWidth = this.$refs.scrollContainer.offsetWidth - 48;
+
+        this.customWidth = Math.min(newWidth, maxWidth);
+        this.viewport = 'custom';
+      },
+
+      stopResize() {
+        this.isDragging = false;
+        document.removeEventListener('mousemove', this.onResize.bind(this));
+        document.removeEventListener('mouseup', this.stopResize.bind(this));
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      },
+
       formatText(text) {
         return text?.replace(/\n/g, '<br>') ?? '';
       }
