@@ -31,6 +31,13 @@
             background: #94a3b8;
             height: 60px;
         }
+        .unread-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body class="h-full overflow-hidden bg-gray-50 text-gray-800 antialiased" x-data="mailpotInbox()">
@@ -39,7 +46,10 @@
 
     <header class="flex-shrink-0 bg-white shadow-sm border-b px-6 py-2 flex items-center justify-between">
         <h1 class="text-xl md:text-xl font-semibold text-blue-700">Laravel Mailpot</h1>
-        <span class="text-sm text-gray-500">Total Messages: {{ count($messages) }}</span>
+        <span class="text-sm text-gray-500">
+            <span x-show="unreadCount > 0" x-text="`${unreadCount} unread / `"></span>
+            <span x-text="`${messages.length} messages`"></span>
+        </span>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
@@ -55,6 +65,26 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                 </button>
+                <button
+                    @click="markAllAsRead()"
+                    class="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
+                    title="Mark all as read"
+                    x-show="unreadCount > 0"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+                <button
+                    @click="markAllAsUnread()"
+                    class="p-1.5 rounded hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-colors"
+                    title="Mark all as unread"
+                    x-show="unreadCount === 0 && messages.length > 0"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                </button>
             </div>
 
             <ul class="divide-y divide-gray-100 overflow-y-auto flex-1">
@@ -62,12 +92,22 @@
                     <li
                         class="cursor-pointer hover:bg-gray-50 transition-colors"
                         :class="{ 'bg-gray-100': selected === index }"
-                        @click="selected = index"
+                        @click="selectMessage(index)"
                     >
-                        <div class="p-4 space-y-1">
-                            <h3 class="text-sm font-medium truncate" x-text="message.parsed.subject || '(No Subject)'"></h3>
-                            <p class="text-xs text-gray-500 truncate" x-text="message.parsed.from || '-'"></p>
-                            <p class="text-xs text-gray-400" x-text="message.parsed.date || ''"></p>
+                        <div class="p-4 space-y-1 flex gap-3">
+                            <div class="pt-1.5">
+                                <div class="unread-dot" x-show="!isRead(message.filename)"></div>
+                                <div class="w-2" x-show="isRead(message.filename)"></div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3
+                                    class="text-sm truncate"
+                                    :class="isRead(message.filename) ? 'font-normal text-gray-600' : 'font-semibold text-gray-900'"
+                                    x-text="message.parsed.subject || '(No Subject)'"
+                                ></h3>
+                                <p class="text-xs text-gray-500 truncate" x-text="message.parsed.from || '-'"></p>
+                                <p class="text-xs text-gray-400" x-text="message.parsed.date || ''"></p>
+                            </div>
                         </div>
                     </li>
                 </template>
@@ -78,6 +118,18 @@
             <template x-if="selected !== null">
                 <div class="flex-1 flex flex-col overflow-hidden">
                     <div class="flex-shrink-0 flex items-center justify-center gap-1 mb-4">
+                        <button
+                            @click="toggleReadStatus(messages[selected].filename)"
+                            class="p-2 rounded border bg-white text-gray-600 hover:bg-gray-100 transition-colors mr-2"
+                            :title="isRead(messages[selected].filename) ? 'Mark as unread' : 'Mark as read'"
+                        >
+                            <svg x-show="isRead(messages[selected].filename)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <svg x-show="!isRead(messages[selected].filename)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76" />
+                            </svg>
+                        </button>
                         <button
                             @click="setViewport('mobile')"
                             :class="viewport === 'mobile' ? 'bg-blue-100 text-blue-700' : 'bg-white text-gray-600 hover:bg-gray-100'"
@@ -161,6 +213,8 @@
 
 <script>
   function mailpotInbox() {
+    const STORAGE_KEY = 'mailpot_read_messages';
+
     return {
       selected: null,
       viewport: 'desktop',
@@ -168,7 +222,75 @@
       isDragging: false,
       startX: 0,
       startWidth: 0,
+      readMessages: [],
       messages: @json($messages),
+
+      init() {
+        this.loadReadMessages();
+      },
+
+      loadReadMessages() {
+        try {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          this.readMessages = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+          this.readMessages = [];
+        }
+      },
+
+      saveReadMessages() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.readMessages));
+        } catch (e) {}
+      },
+
+      isRead(filename) {
+        return this.readMessages.includes(filename);
+      },
+
+      markAsRead(filename) {
+        if (!this.readMessages.includes(filename)) {
+          this.readMessages.push(filename);
+          this.saveReadMessages();
+        }
+      },
+
+      markAsUnread(filename) {
+        this.readMessages = this.readMessages.filter(f => f !== filename);
+        this.saveReadMessages();
+      },
+
+      toggleReadStatus(filename) {
+        if (this.isRead(filename)) {
+          this.markAsUnread(filename);
+        } else {
+          this.markAsRead(filename);
+        }
+      },
+
+      markAllAsRead() {
+        this.messages.forEach(m => {
+          if (!this.readMessages.includes(m.filename)) {
+            this.readMessages.push(m.filename);
+          }
+        });
+        this.saveReadMessages();
+      },
+
+      markAllAsUnread() {
+        const filenames = this.messages.map(m => m.filename);
+        this.readMessages = this.readMessages.filter(f => !filenames.includes(f));
+        this.saveReadMessages();
+      },
+
+      selectMessage(index) {
+        this.selected = index;
+        this.markAsRead(this.messages[index].filename);
+      },
+
+      get unreadCount() {
+        return this.messages.filter(m => !this.isRead(m.filename)).length;
+      },
 
       get containerWidth() {
         if (this.viewport === 'custom' && this.customWidth) {
