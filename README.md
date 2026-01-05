@@ -5,6 +5,8 @@ Mailpot lets you intercept, store, and inspect emails sent during development.
 
 Think of it like [Mailtrap](https://mailtrap.io/) or [Mailhog](https://github.com/mailhog/MailHog), but fully embedded in your Laravel app. No Docker, no SMTP config, no fuss.
 
+![Screenshot](docs/screenshot.png "Mailpot")
+
 ## Features
 
 - Stores sent mails as `.json` files
